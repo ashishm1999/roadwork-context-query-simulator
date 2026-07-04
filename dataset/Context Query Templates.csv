@@ -1,0 +1,16 @@
+parameter,description,type,nullable,distribution,notes
+vehicle_id,Vehicle identifier of the consumer,string,false,uniform-vin,17-character alphanumeric VIN
+location.lat,Latitude of the vehicle at query time,double,false,gaussian(-37.82,0.03),Bounded to Melbourne metro
+location.lng,Longitude of the vehicle at query time,double,false,gaussian(145.02,0.05),Bounded to Melbourne metro
+target_site,Roadwork site whose context is being queried,enum,false,categorical(hawthorn-glenferrie-rd:0.30;burwood-highway-warrigal:0.25;malvern-dandenong-rd:0.25;cbd-swanston-collins:0.20),Weights match observed hit distribution
+max_delay_min,Maximum acceptable delay in minutes,int,true,uniform(2;20),0.85 probability of appearing
+min_freshness,Minimum acceptable Context Freshness (CF) in [0.0-1.0],double,true,uniform(0.20;0.80),Applies to freshness-constrained templates
+min_qoc,Minimum acceptable Quality of Context aggregate,double,true,uniform(0.50;0.95),Applies to QoC-constrained templates
+max_distance_m,Maximum radius around the vehicle for roadwork context,int,true,categorical(500:0.25;1000:0.20;2500:0.20;5000:0.20;10000:0.15),
+route_preference,Route preference,enum,true,categorical(fastest:0.65;shortest:0.25;scenic:0.10),
+context_type,Type of roadwork context requested,enum,false,categorical(roadwork:0.55;incident:0.20;weather:0.15;aggregated:0.10),
+day,Day of the week that the query is executed,enum,false,categorical(monday:0.16;tuesday:0.16;wednesday:0.17;thursday:0.16;friday:0.16;saturday:0.10;sunday:0.09),
+hour,Hour of day 0-23 that the query is executed,int,false,bimodal-diurnal,Peaks at 07:30 and 17:30
+minute,Minute of hour 0-59,int,false,uniform(0;59),
+second,Second of minute 0-59,int,false,uniform(0;59),
+sla_ms,Consumer-side latency SLA in milliseconds,int,true,categorical(100:0.30;250:0.45;500:0.20;1000:0.05),Tighter SLA for safety-critical queries
