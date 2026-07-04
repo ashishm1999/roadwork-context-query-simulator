@@ -1,0 +1,65 @@
+services:
+  simulator:
+    build: .
+    container_name: roadwork-cqs
+    depends_on:
+      - capme
+      - cfms
+      - dcmf
+      - vacf
+    environment:
+      COAAS_URL: http://coaas:8080
+      CAPME_URL: http://capme:8081
+      CFMS_URL:  http://cfms:8082
+      DCMF_URL:  http://dcmf:8083
+      VACF_URL:  http://vacf:8084
+      ACOCA_ADAPTER_ENABLED: "true"
+      QUERY_LOAD: /data/diurnal-queries.json
+    volumes:
+      - ./sample:/data:ro
+    networks:
+      - roadwork-net
+
+  # The ACOCA-P microservices are declared here so that a single
+  # docker compose up brings the whole stack online for reproduction.
+  # See github.com/ashishm1999/ACOCA-P for the underlying images.
+  capme:
+    image: ghcr.io/ashishm1999/acoca-p-capme:latest
+    container_name: acoca-capme
+    ports:
+      - "8081:8081"
+    networks:
+      - roadwork-net
+
+  cfms:
+    image: ghcr.io/ashishm1999/acoca-p-cfms:latest
+    container_name: acoca-cfms
+    ports:
+      - "8082:8082"
+    networks:
+      - roadwork-net
+
+  dcmf:
+    image: ghcr.io/ashishm1999/acoca-p-dcmf:latest
+    container_name: acoca-dcmf
+    ports:
+      - "8083:8083"
+    depends_on:
+      - capme
+      - cfms
+    networks:
+      - roadwork-net
+
+  vacf:
+    image: ghcr.io/ashishm1999/acoca-p-vacf:latest
+    container_name: acoca-vacf
+    ports:
+      - "8084:8084"
+    depends_on:
+      - dcmf
+    networks:
+      - roadwork-net
+
+networks:
+  roadwork-net:
+    driver: bridge
